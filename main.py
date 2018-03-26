@@ -17,7 +17,7 @@ logging.basicConfig(filename=filename, level=logging.DEBUG, format='%(asctime)s 
 
 def authenticate(url):
     buffer = BytesIO()
-    payload=json.dumps({'password':'asdf@1234', 'type':'normal','username':'daniel.kovacs'})
+    payload=json.dumps({'password':'asdf@1234', 'type':'normal','username':'user1'})
     c=pycurl.Curl()
     c.setopt(c.URL, url)
     c.setopt(c.POSTFIELDS,payload)
