@@ -3,6 +3,7 @@
 import json
 from copy import deepcopy
 
+
 def get_keys(data):
     """Generate list of keys to all (nested) attributes of data.
 
@@ -27,8 +28,10 @@ def get_keys(data):
 
     return keys
 
+
 #: Unique object for deletion in mutation list
 DELETE = []
+
 
 def mutations(value):
     """Generate list of possible mutations for value."""
@@ -36,7 +39,7 @@ def mutations(value):
     results = [DELETE]
 
     results += [0, 1, -1, 319723912739871239872193871289 ** 40, None, '', '#',
-                'asd', -0.0, 0.0, True, False, [], [1], {}, {'a':1}]
+                'asd', -0.0, 0.0, True, False, [], [1], {}, {'a': 1}]
 
     if isinstance(value, str):
         results += [value * 2, value * 100, 'asd' * 800, '@', '&', '\n', '{}',

@@ -3,11 +3,13 @@ import argparse
 import time
 import os
 import logging
-from fuzzer import *
+from fuzzer import Fuzzer
 import pycurl
 import json
 from io import BytesIO
-###### Logging ######
+
+
+# ##### Logging ######
 if not os.path.exists('log'):
     os.mkdir('log')
 log = logging.getLogger("Main")
@@ -17,34 +19,35 @@ logging.basicConfig(filename=filename, level=logging.DEBUG, format='%(asctime)s 
 
 def authenticate(url):
     buffer = BytesIO()
-    payload=json.dumps({'password':'asdf@1234', 'type':'normal','username':'user1'})
-    c=pycurl.Curl()
+    payload = json.dumps({'password': 'asdf@1234', 'type': 'normal', 'username': 'user1'})
+    c = pycurl.Curl()
     c.setopt(c.URL, url)
-    c.setopt(c.POSTFIELDS,payload)
+    c.setopt(c.POSTFIELDS, payload)
     c.setopt(pycurl.HTTPHEADER, ["Content-type: application/json"])
     c.setopt(c.WRITEDATA, buffer)
     c.perform()
-    auth_token=json.loads(buffer.getvalue().decode())['auth_token']
+    auth_token = json.loads(buffer.getvalue().decode())['auth_token']
 
     return auth_token
 
+
 def queryData(token, url, payload):
     buffer = BytesIO()
-    c=pycurl.Curl()
+    c = pycurl.Curl()
     c.setopt(c.URL, url)
-    c.setopt(c.POSTFIELDS,payload)
-    c.setopt(pycurl.HTTPHEADER, ["Content-type: application/json","Authorization: Bearer "+token])
+    c.setopt(c.POSTFIELDS, payload)
+    c.setopt(pycurl.HTTPHEADER, ["Content-type: application/json", "Authorization: Bearer " + token])
     c.setopt(c.WRITEDATA, buffer)
     c.perform()
     result = buffer.getvalue().decode()
-    statuscode=c.getinfo(pycurl.HTTP_CODE)
-    return (statuscode,result)
+    statuscode = c.getinfo(pycurl.HTTP_CODE)
+    return (statuscode, result)
 
 
 def main(payload, url, iterations):
     auth_token = authenticate(url + '/auth')
     statuscode, result = queryData(auth_token, args.url + '/projects', payload)
-    print("The query statuscode is "+str(statuscode)+"\n")
+    print("The query statuscode is " + str(statuscode) + "\n")
     print(json.dumps(json.loads(result), indent=4, sort_keys=True))
 
 
