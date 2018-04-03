@@ -1,0 +1,18 @@
+language: python
+python:
+    - 3.5
+
+install:
+    - pip install -r requirements.txt
+    - pip install flake8
+
+script:
+    - flake8 .
+    - python3 -m unittest discover
+
+notifications:
+  email:
+    recipients:
+        - agilis@sch.bme.hu
+    on_success: change
+    on_failure: always
