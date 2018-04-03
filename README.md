@@ -18,3 +18,11 @@ This is the repo for source files, documentation and research materials for acco
     "szam": 6
 }
 ```
+
+## Unittest
+* Run `python3 -m unittest discover`command in the root directory.
+* This will run all tests in `test` folder, which match the `test*.py` pattern.
+
+## Flake8
+* Run `flake8 .` command in root directory.
+* This will recursively check all files in current directory.
