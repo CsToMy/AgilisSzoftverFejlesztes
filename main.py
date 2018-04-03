@@ -31,7 +31,6 @@ def authenticate(url):
 def queryData(token, url, payload):
     buffer = BytesIO()
     c=pycurl.Curl()
-    c=pycurl.Curl()
     c.setopt(c.URL, url)
     c.setopt(c.POSTFIELDS,payload)
     c.setopt(pycurl.HTTPHEADER, ["Content-type: application/json","Authorization: Bearer "+token])
@@ -56,12 +55,18 @@ if __name__ == "__main__":
         parser.add_argument("-u", "--url", action="store", default=None, help="webserver URL")
         parser.add_argument("-i", "--iterations", action="store", default=None, help="number of iterations")
         args = parser.parse_args()
+
         log.info("Correct JSON file path: " + args.json)
         log.info("Webserver URL: " + args.url)
         log.info("Number of iterations: " + args.iterations)
-        fuzzer = Fuzzer()
-        ##Temp JSON for testing
-        tempjson = json.dumps({'description': 'Teszt', 'name': 'Teszt Projekt'})
-        main(tempjson, args.url, args.iterations)
+
+        initial = json.dumps({'description': 'Teszt', 'name': 'Teszt Projekt'})
+
+        fuzzer = Fuzzer(initial)
+
+        for _ in range(int(args.iterations)):
+            fuzzed = fuzzer.fuzz()
+            log.info("Fuzzed JSON: " + fuzzed)
+            main(fuzzed, args.url, args.iterations)
     except Exception as e:
         print(e)
