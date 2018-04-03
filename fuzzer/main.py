@@ -56,9 +56,9 @@ if __name__ == "__main__":
         parser.add_argument("-i", "--iterations", action="store", default=None, help="number of iterations")
         args = parser.parse_args()
 
-        log.info("Correct JSON file path: " + args.json)
-        log.info("Webserver URL: " + args.url)
-        log.info("Number of iterations: " + args.iterations)
+        log.info("Correct JSON file path: %s" % args.json)
+        log.info("Webserver URL: %s" % args.url)
+        log.info("Number of iterations: %s" % args.iterations)
 
         initial = json.dumps({'description': 'Teszt', 'name': 'Teszt Projekt'})
 
@@ -69,4 +69,4 @@ if __name__ == "__main__":
             log.info("Fuzzed JSON: " + fuzzed)
             main(fuzzed, args.url, args.iterations)
     except Exception as e:
-        print(e)
+        raise e
