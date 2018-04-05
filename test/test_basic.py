@@ -1,8 +1,9 @@
 import unittest
-import json
-import pycurl
+# import json
+# import pycurl
 
-from fuzzer.main import authenticate, queryData, Fuzzer
+# from fuzzer.main import authenticate, queryData, Fuzzer
+from fuzzer.main import Fuzzer
 
 
 class Test(unittest.TestCase):
