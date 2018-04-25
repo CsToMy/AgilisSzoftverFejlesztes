@@ -1,0 +1,11 @@
+{
+    "a": "kismacska",
+    "b": "almafa",
+    "THIS_IS_A_DICTIONARY": {
+        "dictelem1": 23,
+        "dictelem2": true
+    },
+    "A_LIST": ["alma", "retek", "cseresznye"],
+    "B_LIST": [23.5, false, {"x": true, "y":false, "f": 3.1415}],
+    "szam": 6
+}
