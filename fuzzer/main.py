@@ -63,9 +63,8 @@ if __name__ == "__main__":
         log.info("Webserver URL: %s" % args.url)
         log.info("Number of iterations: %s" % args.iterations)
 
-        initial = json.dumps({'description': 'Teszt', 'name': 'Teszt Projekt'})
-
-        fuzzer = Fuzzer(initial)
+        data = json.dumps(json.load(open(args.json)))
+        fuzzer = Fuzzer(data)
 
         for _ in range(int(args.iterations)):
             fuzzed = fuzzer.fuzz()

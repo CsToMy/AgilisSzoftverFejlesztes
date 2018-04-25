@@ -33,7 +33,8 @@ class Test(unittest.TestCase):
     def test_query(self):
         url = "152.66.209.124/api/v1/auth"
         token = authenticate(url)
-        statuscode, result = queryData(token, url + '/projects', Fuzzer('{"a":1}').fuzz())
+        data = json.dumps(json.load(open("json.txt")))
+        statuscode, result = queryData(token, url + '/projects', Fuzzer(data).fuzz())
         self.assertNotEqual("", result)
         self.assertGreater(int(statuscode), 99)
         self.assertLess(int(statuscode), 600)
