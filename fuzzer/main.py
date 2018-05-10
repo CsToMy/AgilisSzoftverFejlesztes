@@ -3,7 +3,7 @@ import argparse
 import time
 import os
 import logging
-from fuzzer import *
+from fuzzer.fuzzer import Fuzzer
 import pycurl
 import json
 from io import BytesIO
