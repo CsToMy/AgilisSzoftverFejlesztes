@@ -8,7 +8,6 @@ import pycurl
 import json
 from io import BytesIO
 
-
 # ##### Logging ######
 if not os.path.exists('log'):
     os.mkdir('log')
@@ -47,9 +46,13 @@ def queryData(token, url, payload):
 
 
 def main(payload, url, auth_token):
-    statuscode, result = queryData(auth_token, url + '/projects', payload)
-    print("The query statuscode is " + str(statuscode) + "\n")
-    print(json.dumps(json.loads(result), indent=4, sort_keys=True))
+    if auth_token != None:
+        statuscode, result = queryData(auth_token, url + '/projects', payload)
+        print("The query statuscode is " + str(statuscode) + "\n")
+        print(json.dumps(json.loads(result), indent=4, sort_keys=True))
+    else:
+        # olyan programhoz amihez nem kell authentikalas
+        pass
 
 
 if __name__ == "__main__":
@@ -58,6 +61,8 @@ if __name__ == "__main__":
         parser.add_argument("-j", "--json", action="store", default=None, help="correct JSON file path")
         parser.add_argument("-u", "--url", action="store", default=None, help="webserver URL")
         parser.add_argument("-i", "--iterations", action="store", default=None, help="number of iterations")
+        parser.add_argument("-n", action="store_true", default=False, help="Is it necessary to authenticate?"
+                                                                           " Default: Yes")
         args = parser.parse_args()
 
         log.info("Correct JSON file path: %s" % args.json)
@@ -67,7 +72,11 @@ if __name__ == "__main__":
         data = json.dumps(json.load(open(args.json)))
         fuzzer = Fuzzer(data)
 
-        auth_token = authenticate(args.url + '/auth')
+        if args.n:
+            print("No need to authenticate")
+            auth_token = None
+        else:
+            auth_token = authenticate(args.url + '/auth')
 
         for _ in range(int(args.iterations)):
             fuzzed = fuzzer.fuzz()
