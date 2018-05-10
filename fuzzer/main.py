@@ -46,7 +46,7 @@ def queryData(token, url, payload):
 
 
 def main(payload, url, auth_token):
-    if auth_token != None:
+    if auth_token is not None:
         statuscode, result = queryData(auth_token, url + '/projects', payload)
         print("The query statuscode is " + str(statuscode) + "\n")
         print(json.dumps(json.loads(result), indent=4, sort_keys=True))
