@@ -3,7 +3,7 @@ import argparse
 import time
 import os
 import logging
-from fuzzer.fuzzer import Fuzzer
+from fuzzer import *
 import pycurl
 import json
 from io import BytesIO
@@ -27,6 +27,8 @@ def authenticate(url):
     c.setopt(c.WRITEDATA, buffer)
     c.perform()
     auth_token = json.loads(buffer.getvalue().decode())['auth_token']
+    log.info("Authentication successfully")
+    print("Authentication successfully")
 
     return auth_token
 
@@ -44,9 +46,8 @@ def queryData(token, url, payload):
     return (statuscode, result)
 
 
-def main(payload, url, iterations):
-    auth_token = authenticate(url + '/auth')
-    statuscode, result = queryData(auth_token, args.url + '/projects', payload)
+def main(payload, url, auth_token):
+    statuscode, result = queryData(auth_token, url + '/projects', payload)
     print("The query statuscode is " + str(statuscode) + "\n")
     print(json.dumps(json.loads(result), indent=4, sort_keys=True))
 
@@ -66,9 +67,11 @@ if __name__ == "__main__":
         data = json.dumps(json.load(open(args.json)))
         fuzzer = Fuzzer(data)
 
+        auth_token = authenticate(args.url + '/auth')
+
         for _ in range(int(args.iterations)):
             fuzzed = fuzzer.fuzz()
             log.info("Fuzzed JSON: " + fuzzed)
-            main(fuzzed, args.url, args.iterations)
+            main(fuzzed, args.url, auth_token)
     except Exception as e:
         raise e
