@@ -7,7 +7,7 @@ from copy import deepcopy
 def get_keys(data):
     """Generate list of keys to all (nested) attributes of data.
 
-    Example: data({'a': 1, 'b': [1, 2]})
+    Example: get_keys({'a': 1, 'b': [1, 2]})
     -> [('a',), ('b',), ('b',0), ('b',1)]
     """
     keys = []

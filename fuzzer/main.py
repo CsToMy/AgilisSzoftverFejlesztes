@@ -26,8 +26,8 @@ def authenticate(url):
     c.setopt(c.WRITEDATA, buffer)
     c.perform()
     auth_token = json.loads(buffer.getvalue().decode())['auth_token']
-    log.info("Authentication successfully")
-    print("Authentication successfully")
+    log.info("Authentication successful")
+    print("Authentication successful")
 
     return auth_token
 
@@ -62,9 +62,10 @@ def main(payload, url, auth_token):
 if __name__ == "__main__":
     try:
         parser = argparse.ArgumentParser(description="JSON Fuzzer main")
-        parser.add_argument("-j", "--json", action="store", default=None, help="correct JSON file path")
-        parser.add_argument("-u", "--url", action="store", default=None, help="webserver URL")
-        parser.add_argument("-i", "--iterations", action="store", default=None, help="number of iterations")
+        parser.add_argument("-j", "--json", action="store", default=None, help="correct JSON file path", required=True)
+        parser.add_argument("-u", "--url", action="store", default=None, help="webserver URL", required=True)
+        parser.add_argument("-i", "--iterations", action="store", default=None, help="number of iterations",
+                            required=True)
         parser.add_argument("-n", action="store_true", default=False, help="Is it necessary to authenticate?"
                                                                            " Default: Yes")
         args = parser.parse_args()

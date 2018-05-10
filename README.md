@@ -1,7 +1,9 @@
 # AgilisSzoftverFejlesztes
 [![Build Status](https://travis-ci.org/CsToMy/AgilisSzoftverFejlesztes.svg?branch=master)](https://travis-ci.org/CsToMy/AgilisSzoftverFejlesztes)
 
-This is the repo for source files, documentation and research materials for accomplish the Agilis szoftverfejlesztés subject.
+This is the repo for source files, documentation and research materials
+for accomplishing the Agile Network Service Development (Agilis
+szoftverfejlesztés) subject.
 
 ## Example JSON used for testing:
 

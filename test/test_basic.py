@@ -34,7 +34,8 @@ class Test(unittest.TestCase):
     def test_query(self):
         url = "152.66.209.124/api/v1/auth"
         token = authenticate(url)
-        data = json.dumps(json.load(open(os.path.join('test', 'json.txt'))))
+        with open(os.path.join('test', 'json.txt')) as test_json:
+            data = json.dumps(json.load(test_json))
         statuscode, result = queryData(token, url + '/projects', Fuzzer(data).fuzz())
         self.assertNotEqual("", result)
         self.assertGreater(int(statuscode), 99)
