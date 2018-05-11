@@ -1,14 +1,15 @@
 #!/usr/bin/env python3.6
 
-import json
 from copy import deepcopy
+import json
+import random
 
 
 def get_keys(data):
     """Generate list of keys to all (nested) attributes of data.
 
     Example: get_keys({'a': 1, 'b': [1, 2]})
-    -> [('a',), ('b',), ('b',0), ('b',1)]
+    -> [('a',), ('b',), ('b', 0), ('b', 1)]
     """
     keys = []
 
@@ -33,7 +34,7 @@ def get_keys(data):
 DELETE = []
 
 
-def mutations(value):
+def possible_mutations(value):
     """Generate list of possible mutations for value."""
 
     results = [DELETE]
@@ -47,10 +48,69 @@ def mutations(value):
         if '2018' in value:
             results.append(value.replace('2018', '1018'))
             results.append(value.replace('2018', '3018'))
-    if isinstance(value, (int, float)):
-        # TODO: int coded as string: '5' -> '-5', '4', '6'
-        results += [-value, value + 1, value - 1]
+
+    if not isinstance(value, str):
+        results.append(str(value))
+
+    # if value is a number type, or an str with a number value
+    try:
+        try:
+            value = int(value)
+        except (ValueError, TypeError):
+            value = float(value)
+        vals = [-value, value + 1, value - 1]
+        results += vals
+        results += map(str, vals)
+    except (ValueError, TypeError):
+        pass
+
     return results
+
+
+def resolve_keypath(value, key_path):
+    """Get contained object by using keys.
+
+    Example: resolve_keypath({'a': [[[['x']]]]}, ['a', 0, 0, 0, 0]) -> 'x'
+    """
+    for k in key_path:
+        value = value[k]
+    return value
+
+
+def apply_mutations(original_json, mutations):
+    """Apply specified mutations to object.
+
+    Args:
+        original_json: Object to be modified.
+        mutations: Keypath+mutation pairs.
+    """
+    copy = deepcopy(original_json)
+
+    for key_path, mut in mutations:
+        # retrieve the direct container of the mutated attribute
+        value = copy
+        try:
+            value = resolve_keypath(value, key_path[:-1])
+        except (KeyError, IndexError):
+            # container has been replaced or deleted
+            continue
+
+        if not isinstance(value, (dict, list)):
+            # container has been modified to a non-composite value
+            continue
+
+        last_key = key_path[-1]
+        if mut is DELETE:
+            try:
+                del value[last_key]
+            except (KeyError, IndexError):
+                pass
+        else:
+            try:
+                value[last_key] = mut
+            except IndexError:
+                value.append(mut)
+    return copy
 
 
 class Fuzzer():
@@ -66,31 +126,18 @@ class Fuzzer():
         if self.key_idx >= len(self.keys):
             raise StopIteration
 
-        key = self.keys[self.key_idx]
-
-        copy = deepcopy(self.input)
+        key_path = self.keys[self.key_idx]
 
         # generate mutation list when we start mutating a different attribute
         if self.mutation_idx == 0:
-            value = copy
-            for k in key:
-                value = value[k]
+            value = resolve_keypath(self.input, key_path)
 
-            self.mutations = mutations(value)
+            self.mutations = possible_mutations(value)
 
         # select next mutation for the current attribute
         mut = self.mutations[self.mutation_idx]
 
-        # retrieve the direct container of the mutated attribute
-        value = copy
-        for k in key[:-1]:
-            value = value[k]
-
-        # perform mutation
-        if mut is DELETE:
-            del value[key[-1]]
-        else:
-            value[key[-1]] = mut
+        result = apply_mutations(self.input, [(key_path, mut)])
 
         # select next mutation (used on the next call to fuzz)
         self.mutation_idx += 1
@@ -100,4 +147,14 @@ class Fuzzer():
             self.key_idx += 1
             self.mutation_idx = 0
 
-        return json.dumps(copy)
+        return json.dumps(result)
+
+    def fuzz_random(self, mut_num=2):
+        attributes = random.sample(self.keys, mut_num)
+        mutations = []
+        for key_path in attributes:
+            value = resolve_keypath(self.input, key_path)
+            mutation = random.choice(possible_mutations(value))
+            mutations.append((key_path, mutation))
+
+        return apply_mutations(self.input, mutations)
