@@ -37,12 +37,12 @@ def queryData(token, url, payload):
     c = pycurl.Curl()
     c.setopt(c.URL, url)
     c.setopt(c.POSTFIELDS, payload)
-    if(token is not None):
+    if token is not None:
         c.setopt(pycurl.HTTPHEADER, ["Content-type: application/json", "Authorization: Bearer " + token])
     c.setopt(c.WRITEDATA, buffer)
     c.perform()
-    if(c.getinfo(pycurl.HTTP_CODE)==500):
-        result="{}"
+    if c.getinfo(pycurl.HTTP_CODE) == 500:
+        result = "{}"
     else:
         result = buffer.getvalue().decode()
     statuscode = c.getinfo(pycurl.HTTP_CODE)
@@ -55,9 +55,10 @@ def main(payload, url, auth_token):
         print("The query statuscode is " + str(statuscode) + "\n")
         print(json.dumps(json.loads(result), indent=4, sort_keys=True))
     else:
-        statuscode, result = queryData(None, url , payload)
+        statuscode, result = queryData(None, url, payload)
         print("The query statuscode is " + str(statuscode) + "\n")
         print(json.dumps(json.loads(result), indent=4, sort_keys=True))
+
 
 if __name__ == "__main__":
     try:
