@@ -20,6 +20,20 @@ class Test(unittest.TestCase):
             self.assertNotEqual(fbase, f2)
             fbase = f2
 
+    def test_random_fuzzing(self):
+        import random
+        random.seed(123)
+        fbase = '{"a": 1, "b": [], "c": [1,2,3,4], "d": {}, "e": "aaaaa"}'
+
+        results = set()
+        fuzz_num = 100
+        for _ in range(fuzz_num):
+            f = Fuzzer(fbase)
+            fuzzed = json.dumps(f.fuzz_random(mut_num=5))
+            self.assertNotIn(fuzzed, results)
+            results.add(fuzzed)
+        self.assertEqual(len(results), fuzz_num)
+
     def test_auth(self):
         url = "152.66.209.124/api/v1/auth"
         token = authenticate(url)
