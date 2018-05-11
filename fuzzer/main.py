@@ -3,7 +3,7 @@ import argparse
 import time
 import os
 import logging
-from fuzzer.fuzzer import Fuzzer
+from fuzzer import Fuzzer
 import pycurl
 import json
 from io import BytesIO
@@ -37,10 +37,14 @@ def queryData(token, url, payload):
     c = pycurl.Curl()
     c.setopt(c.URL, url)
     c.setopt(c.POSTFIELDS, payload)
-    c.setopt(pycurl.HTTPHEADER, ["Content-type: application/json", "Authorization: Bearer " + token])
+    if(token is not None):
+        c.setopt(pycurl.HTTPHEADER, ["Content-type: application/json", "Authorization: Bearer " + token])
     c.setopt(c.WRITEDATA, buffer)
     c.perform()
-    result = buffer.getvalue().decode()
+    if(c.getinfo(pycurl.HTTP_CODE)==500):
+        result="{}"
+    else:
+        result = buffer.getvalue().decode()
     statuscode = c.getinfo(pycurl.HTTP_CODE)
     return (statuscode, result)
 
@@ -51,9 +55,9 @@ def main(payload, url, auth_token):
         print("The query statuscode is " + str(statuscode) + "\n")
         print(json.dumps(json.loads(result), indent=4, sort_keys=True))
     else:
-        # olyan programhoz amihez nem kell authentikalas
-        pass
-
+        statuscode, result = queryData(None, url , payload)
+        print("The query statuscode is " + str(statuscode) + "\n")
+        print(json.dumps(json.loads(result), indent=4, sort_keys=True))
 
 if __name__ == "__main__":
     try:
