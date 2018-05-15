@@ -69,6 +69,7 @@ if __name__ == "__main__":
                             required=True)
         parser.add_argument("-n", action="store_true", default=False, help="Is it necessary to authenticate?"
                                                                            " Default: Yes")
+        parser.add_argument("-r", "--random", action="store_true", default=False, help="fuzz in random order")
         args = parser.parse_args()
 
         log.info("Correct JSON file path: %s" % args.json)
@@ -77,6 +78,10 @@ if __name__ == "__main__":
 
         data = json.dumps(json.load(open(args.json)))
         fuzzer = Fuzzer(data)
+        if not args.random:
+            fuzz = fuzzer.fuzz
+        else:
+            fuzz = fuzzer.fuzz_random
 
         if args.n:
             print("No need to authenticate")
@@ -85,7 +90,7 @@ if __name__ == "__main__":
             auth_token = authenticate(args.url + '/auth')
 
         for _ in range(int(args.iterations)):
-            fuzzed = fuzzer.fuzz()
+            fuzzed = fuzz()
             log.info("Fuzzed JSON: " + fuzzed)
             main(fuzzed, args.url, auth_token)
     except Exception as e:
