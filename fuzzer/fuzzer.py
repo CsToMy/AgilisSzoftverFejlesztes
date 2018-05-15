@@ -91,7 +91,7 @@ def apply_mutations(original_json, mutations):
         value = copy
         try:
             value = resolve_keypath(value, key_path[:-1])
-        except (KeyError, IndexError):
+        except (KeyError, IndexError, TypeError):
             # container has been replaced or deleted
             continue
 
@@ -108,7 +108,7 @@ def apply_mutations(original_json, mutations):
         else:
             try:
                 value[last_key] = mut
-            except IndexError:
+            except (IndexError, TypeError):
                 value.append(mut)
     return copy
 
@@ -157,4 +157,5 @@ class Fuzzer():
             mutation = random.choice(possible_mutations(value))
             mutations.append((key_path, mutation))
 
-        return apply_mutations(self.input, mutations)
+        result = apply_mutations(self.input, mutations)
+        return json.dumps(result)
